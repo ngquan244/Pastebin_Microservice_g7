@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pastes List</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-gradient-to-r from-teal-400 via-blue-500 to-purple-600 text-white font-sans">
+    <div class="container mx-auto mt-12 p-6">
+
+        <!-- Tiêu đề trang -->
+        <h1 class="text-5xl font-extrabold text-center mb-8 tracking-tight">Public Pastes</h1>
+
+        <% if (error) { %>
+            <div class="bg-red-500 text-white p-4 rounded-lg shadow-lg mb-6">
+                <%= error %>
+            </div>
+        <% } %>
+
+        <!-- Nút tạo paste mới -->
+        <div class="mb-6 text-center">
+            <a href="/" class="inline-block px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-full shadow-lg transform transition-transform hover:scale-105 hover:shadow-xl">Create New Paste</a>
+        </div>
+
+        <!-- Danh sách các paste -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            <% pastes.forEach(function(paste) { %>
+                <div class="bg-white text-gray-800 rounded-2xl shadow-xl hover:shadow-2xl transition-all transform hover:scale-105">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h5 class="text-2xl font-semibold text-indigo-600"><%= paste.title %></h5>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-4">
+                            <strong>Created:</strong> <%= new Date(paste.created_at).toLocaleString('en-US', { timeZone: 'Asia/Ho_Chi_Minh', dateStyle: 'medium', timeStyle: 'medium' }) %>
+                        </p>
+                        <a href="/paste/<%= paste.id %>" class="inline-block px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg transition-all duration-300">View Full</a>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
+
+        <!-- Phân trang -->
+        <% if (pagination && pagination.totalPages > 1) { %>
+            <div class="flex justify-center mt-8">
+                <nav aria-label="Page navigation">
+                    <ul class="flex items-center space-x-4">
+                        <% if (pagination.page > 1) { %>
+                            <li>
+                                <a href="/paste_list?page=<%= pagination.page - 1 %>" class="text-white hover:text-indigo-200 text-lg font-semibold">&laquo; Prev</a>
+                            </li>
+                        <% } %>
+
+                        <% 
+                        const totalPages = pagination.totalPages;
+                        const currentPage = pagination.page;
+                        const delta = 1;
+                        
+                        let pages = [];
+                        pages.push(1);
+                        
+                        for (let i = Math.max(2, currentPage - delta); i <= Math.min(totalPages - 1, currentPage + delta); i++) {
+                            pages.push(i);
+                        }
+                        
+                        if (totalPages > 1) {
+                            pages.push(totalPages);
+                        }
+                        
+                        pages = [...new Set(pages)].sort((a, b) => a - b);
+                        
+                        let prevPage = 0;
+                        for (const p of pages) {
+                            if (prevPage && p - prevPage > 1) { %>
+                                <li>
+                                    <span class="text-white opacity-50">...</span>
+                                </li>
+                            <% } %>
+                            <li>
+                                <a href="/paste_list?page=<%= p %>" class="text-white hover:text-indigo-200 text-lg font-semibold <%= currentPage === p ? 'text-indigo-200' : '' %>">
+                                    <%= p %>
+                                </a>
+                            </li>
+                        <% 
+                            prevPage = p;
+                        }
+                        %>
+
+                        <% if (pagination.page < pagination.totalPages) { %>
+                            <li>
+                                <a href="/paste_list?page=<%= pagination.page + 1 %>" class="text-white hover:text-indigo-200 text-lg font-semibold">Next &raquo;</a>
+                            </li>
+                        <% } %>
+                    </ul>
+                </nav>
+            </div>
+        <% } %>
+
+        <!-- Thông tin hiển thị số paste -->
+        <div class="text-center text-sm mt-6 text-gray-200">
+            <small>Hiển thị <%= pagination ? (pagination.page - 1) * pagination.limit + 1 : 0 %> đến <%= pagination ? Math.min(pagination.page * pagination.limit, pagination.totalPastes) : 0 %> trong tổng số <%= pagination ? pagination.totalPastes : 0 %> paste</small>
+        </div>
+    </div>
+</body>
+
+</html>

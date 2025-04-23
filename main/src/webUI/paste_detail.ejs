@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Paste - <%= paste.id %></title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-gradient-to-r from-teal-400 via-blue-500 to-purple-600 min-h-screen text-white font-sans">
+
+  <div class="container mx-auto mt-12 p-6">
+
+    <% if (error) { %>
+      <div class="bg-red-500 text-white p-4 rounded-lg shadow-lg mb-6 text-center">
+        <%= error %>
+      </div>
+    <% } %>
+
+    <div class="bg-white text-gray-900 rounded-2xl shadow-xl p-8">
+      <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 gap-4">
+        <div>
+          <h1 class="text-4xl font-extrabold text-indigo-600 mb-2 tracking-tight"><%= paste.title %></h1>
+          <button id="copyButton" onclick="copyPasteUrl()" class="inline-flex items-center bg-blue-600 text-white px-5 py-2 rounded-full hover:bg-blue-700 shadow-md transition-all">
+            📋 Copy URL
+          </button>
+        </div>
+      </div>
+
+      <pre class="bg-gray-100 rounded-xl overflow-x-auto p-6 text-sm whitespace-pre-wrap break-words">
+<code><%- paste.content %></code>
+</pre>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-6 text-sm text-gray-800">
+        <div>
+          <strong>Created:</strong><br>
+          <%= new Date(paste.created_at).toLocaleString('en-US', { timeZone: 'Asia/Ho_Chi_Minh', dateStyle: 'medium', timeStyle: 'medium' }) %>
+        </div>
+        <div>
+          <strong>Expires:</strong><br>
+          <% if (paste.expires_at) { %>
+            <%= new Date(paste.expires_at).toLocaleString('en-US', { timeZone: 'Asia/Ho_Chi_Minh', dateStyle: 'medium', timeStyle: 'medium' }) %>
+            <% if (paste.status === 'expired') { %>
+              <span class="ml-2 text-red-500 font-semibold">Expired</span>
+            <% } %>
+          <% } else { %>
+            Never
+          <% } %>
+        </div>
+        <div>
+          <strong>Views:</strong><br>
+          <%= paste.views %>
+        </div>
+        <div>
+          <strong>Privacy:</strong><br>
+          <%= paste.privacy.charAt(0).toUpperCase() + paste.privacy.slice(1) %>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-8 text-center space-x-4">
+      <a href="/" class="inline-block px-6 py-3 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-full shadow-lg transform transition-transform hover:scale-105">Create Paste</a>
+      <a href="/paste_list" class="inline-block px-6 py-3 bg-indigo-500 hover:bg-indigo-600 text-white font-semibold rounded-full shadow-lg transform transition-transform hover:scale-105">Pastes List</a>
+      <a href="/stats" class="inline-block px-6 py-3 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold rounded-full shadow-lg transform transition-transform hover:scale-105">Monthly Statistics</a>
+    </div>
+
+  </div>
+
+  <script>
+    function copyPasteUrl() {
+      const copyButton = document.getElementById('copyButton');
+      const url = '<%= `${process.env.CORS_ORIGIN || "http://localhost:3000"}/paste/${paste.id}` %>';
+      navigator.clipboard.writeText(url).then(() => {
+        copyButton.textContent = '✅ Copied!';
+        copyButton.classList.remove('bg-blue-600');
+        copyButton.classList.add('bg-green-500');
+        setTimeout(() => {
+          copyButton.textContent = '📋 Copy URL';
+          copyButton.classList.remove('bg-green-500');
+          copyButton.classList.add('bg-blue-600');
+        }, 2000);
+      }).catch(() => {
+        copyButton.textContent = '❌ Failed!';
+        copyButton.classList.remove('bg-blue-600');
+        copyButton.classList.add('bg-red-500');
+        setTimeout(() => {
+          copyButton.textContent = '📋 Copy URL';
+          copyButton.classList.remove('bg-red-500');
+          copyButton.classList.add('bg-blue-600');
+        }, 2000);
+      });
+    }
+  </script>
+
+</body>
+
+</html>

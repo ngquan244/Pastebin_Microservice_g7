@@ -1,0 +1,49 @@
+services:
+  app:
+    build: .
+    ports:
+      - "${PORT}:${PORT}"
+    env_file:
+      - .env
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  mysql:
+    image: mysql:8.0
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: pastebin
+    volumes:
+      - ./pastebin_db.sql:/docker-entrypoint-initdb.d/pastebin_db.sql
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost","-uroot", "-ppassword" ]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    command: [
+      "--max_connections=500"
+    ]
+
+  locust:
+    build: ./locust
+    ports:
+      - "8089:8089"
+    environment:
+      - TARGET_HOST=http://app:${PORT}
+    depends_on:
+      - app
+      - mysql
+    command: [ "locust", "-f", "locustfile.py", "--host=http://app:${PORT}" ]
+
+    # command: [
+    #   "--max_connections=500",
+    #   "--innodb-buffer-pool-size=512M",
+    #   "--innodb-redo-log-capacity=256M",
+    #   "--innodb-flush-log-at-trx-commit=2",
+    #   "--host-cache-size=0"
+    # ]

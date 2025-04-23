@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Home</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-gradient-to-r from-teal-400 via-blue-500 to-purple-600 min-h-screen text-white font-sans p-6">
+
+  <div class="max-w-3xl mx-auto bg-white text-gray-900 rounded-2xl shadow-xl p-8">
+    <h1 class="text-3xl font-bold text-center text-indigo-600 mb-6">Create Paste</h1>
+
+    <% if (error) { %>
+      <div class="bg-red-500 text-white p-4 rounded-lg shadow-lg mb-6 text-center">
+        <%= error %>
+      </div>
+    <% } %>
+
+    <form method="POST" action="/paste">
+      <div class="mb-6">
+        <input type="text" name="title" class="w-full p-3 border border-gray-300 rounded-lg bg-gray-100 text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Title (not required)" />
+      </div>
+
+      <div class="mb-6">
+        <textarea name="content" rows="10" class="w-full p-3 border border-gray-300 rounded-lg bg-gray-100 text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Type your content" required></textarea>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div>
+          <label for="expires_in" class="block text-sm font-semibold text-gray-700">Expires in:</label>
+          <select name="expires_in" id="expires_in" class="w-full p-3 border border-gray-300 rounded-lg bg-gray-100 text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <option value="">Never</option>
+            <option value="0.2">12 seconds</option>
+            <option value="1">1 minute</option>
+            <option value="60">1 hour</option>
+            <option value="1440">1 day</option>
+            <option value="10080">1 week</option>
+            <option value="43200">1 month</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="privacy" class="block text-sm font-semibold text-gray-700">Privacy:</label>
+          <select name="privacy" id="privacy" class="w-full p-3 border border-gray-300 rounded-lg bg-gray-100 text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <option value="PUBLIC">Public</option>
+            <option value="PRIVATE">Private</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+        <!-- Nút Create chiếm toàn bộ 2 cột -->
+        <button type="submit" class="col-span-1 md:col-span-2 w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all duration-300 transform hover:scale-105">
+          Create
+        </button>
+      
+        <!-- Hai nút chia đều bên dưới -->
+        <a href="/paste_list" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300 transform hover:scale-105 text-center">
+          Pastes List
+        </a>
+        <a href="/stats" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300 transform hover:scale-105 text-center">
+          Monthly Statistics
+        </a>
+      </div>
+    </form>
+  </div>
+
+</body>
+
+</html>
